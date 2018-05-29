@@ -5,7 +5,11 @@
 package it.polito.tdp.borders;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.borders.model.CountryAndNumber;
+import it.polito.tdp.borders.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -13,7 +17,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class BordersController {
-
+	
+	private Model model;
+	
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -31,7 +37,28 @@ public class BordersController {
 
     @FXML
     void doCalcolaConfini(ActionEvent event) {
-
+    	String annoS = txtAnno.getText();
+    	try {
+    		int anno = Integer.parseInt(annoS);
+    		
+    		model.creaGrafo(anno);
+    		
+    		List<CountryAndNumber> list = model.getCountryAndNumber();
+    		
+    		if(list.size()==0) {
+    			txtResult.appendText("Non ci sono stati corrispondenti.\n");
+    		}
+    		else {
+    			txtResult.appendText("Stati nell'anno " + anno +":\n");
+    			for(CountryAndNumber c : list) {
+        			txtResult.appendText(String.format("%s %d\n", c.getCountry().getStateName(), c.getNumber()));
+        		}
+    		}
+    		
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("Errore di formattazione dell'anno.\n");
+    		return;
+    	}
     }
 
     @FXML
@@ -46,4 +73,8 @@ public class BordersController {
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Borders.fxml'.";
 
     }
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
 }
